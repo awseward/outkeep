@@ -5,10 +5,10 @@ import gleam/list
 import gleam/result
 import gleeunit
 import gleeunit/should
-import simplifile
 import outkeep
 import outkeep/checklist_item.{type ChecklistItem, ChecklistItem}
 import outkeep/note
+import simplifile
 
 pub fn main() {
   gleeunit.main()
