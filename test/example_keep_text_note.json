@@ -1,0 +1,11 @@
+{
+  "color": "DEFAULT",
+  "isTrashed": false,
+  "isPinned": false,
+  "isArchived": true,
+  "textContent": "Here is some text\nthat is on multiple lines",
+  "title": "An example Keep text note",
+  "userEditedTimestampUsec": 1704830026609000,
+  "createdTimestampUsec": 1704826277418000,
+  "textContentHtml": "<!-- … snipped for brevity … -->"
+}

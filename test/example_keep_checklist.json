@@ -1,0 +1,31 @@
+{
+  "color": "DEFAULT",
+  "isTrashed": false,
+  "isPinned": false,
+  "isArchived": false,
+  "listContent": [
+    {
+      "textHtml": "<!-- … snipped for brevity … -->",
+      "text": "I'm not checked",
+      "isChecked": false
+    },
+    {
+      "textHtml": "<!-- … snipped for brevity … -->",
+      "text": "I'm also not checked",
+      "isChecked": false
+    },
+    {
+      "textHtml": "<!-- … snipped for brevity … -->",
+      "text": "I'm checked",
+      "isChecked": true
+    },
+    {
+      "textHtml": "<!-- … snipped for brevity … -->",
+      "text": "I'm also checked",
+      "isChecked": true
+    }
+  ],
+  "title": "An example Keep checklist",
+  "userEditedTimestampUsec": 1723438096020000,
+  "createdTimestampUsec": 1723433532334000
+}
