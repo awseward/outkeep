@@ -2,6 +2,7 @@
 
 [![Package Version](https://img.shields.io/hexpm/v/outkeep)](https://hex.pm/packages/outkeep)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/outkeep/)
+[![test](https://github.com/awseward/outkeep/actions/workflows/test.yml/badge.svg)](https://github.com/awseward/outkeep/actions/workflows/test.yml)
 
 ```sh
 gleam add outkeep@1
