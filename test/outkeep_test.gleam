@@ -80,8 +80,11 @@ pub fn text_note_from_json_on_checklist_test() {
 }
 
 pub fn note_from_json_test() {
-  let assert [n_checklist, n_text] =
-    ["./test/example_keep_checklist.json", "./test/example_keep_text_note.json"]
+  let assert [n_checklist, n_text, n_unknown] =
+    [
+      "./test/example_keep_checklist.json", "./test/example_keep_text_note.json",
+      "./test/example_keep_unknown.json",
+    ]
     |> list.map(fn(fpath) { fpath |> read_file |> outkeep.note_from_json })
     |> result.all
     |> should.be_ok
@@ -101,6 +104,16 @@ pub fn note_from_json_test() {
   n_text |> note.is_trashed |> should.be_false
   n_text |> note.created_at |> should_.equal_iso8601("2024-01-09T18:51:17.418Z")
   n_text |> note.edited_at |> should_.equal_iso8601("2024-01-09T19:53:46.609Z")
+
+  n_unknown |> note.title |> should.equal("My shopping list")
+  n_unknown |> note.is_archived |> should.be_false
+  n_unknown |> note.is_trashed |> should.be_false
+  n_unknown
+  |> note.created_at
+  |> should_.equal_iso8601("2017-07-12T18:55:47.649Z")
+  n_unknown
+  |> note.edited_at
+  |> should_.equal_iso8601("2017-07-12T18:55:47.649Z")
 }
 
 // --- Helpers and such

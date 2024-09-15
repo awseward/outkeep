@@ -1,0 +1,17 @@
+{
+  "color": "DEFAULT",
+  "isTrashed": false,
+  "isPinned": false,
+  "isArchived": false,
+  "annotations": [
+    {
+      "description": "",
+      "source": "WEBLINK",
+      "title": "",
+      "url": "https://support.google.com/keep/?p=migrated_from_assistant"
+    }
+  ],
+  "title": "My shopping list",
+  "userEditedTimestampUsec": 1499885747649000,
+  "createdTimestampUsec": 1499885747649000
+}
