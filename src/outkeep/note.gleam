@@ -9,7 +9,7 @@ import outkeep/unknown_note.{type UnknownNote}
 // is pretty unpleasant, so making it opaque for now and just appending a `_`
 // so things don't get too confusing, but I don't love that…
 
-pub opaque type Note {
+pub type Note {
   C(checklist: Checklist)
   TN(text_note: TextNote)
   UN(unknown_note: UnknownNote)
