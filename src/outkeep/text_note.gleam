@@ -1,6 +1,6 @@
 import birl.{type Time}
 import gleam/dynamic.{type DecodeError, type Dynamic}
-import gleam/result
+import outkeep/time.{time_from_usec}
 
 pub type TextNote {
   TextNote(
@@ -26,10 +26,4 @@ pub fn decode(dyn: Dynamic) -> Result(TextNote, List(DecodeError)) {
     dynamic.field("userEditedTimestampUsec", of: time_from_usec),
     dynamic.field("color", of: dynamic.string),
   )
-}
-
-fn time_from_usec(dyn: Dynamic) {
-  dyn
-  |> dynamic.int
-  |> result.map(with: birl.from_unix_micro)
 }
