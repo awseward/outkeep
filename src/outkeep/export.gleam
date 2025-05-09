@@ -23,12 +23,16 @@ pub fn parse(filename: String) -> Result(ExportPart, ExportParseError) {
     case regex.scan(re, filename) {
       [match] -> Ok(match)
       [] -> Error(NoRegexMatch)
+      // NOTE: The way the regex is written, I don't even think this is
+      // possible, but I am not sure of how to prove that to the type system
       [_, ..] -> Error(TooManyRegexMatches)
     }
   })
   use #(raw_timestamp, raw_number) <- result.try({
     case match.submatches {
       [Some(ts), Some(num)] -> Ok(#(ts, num))
+      // NOTE: The way the regex is written, I don't even think this is
+      // possible, but I am not sure of how to prove that to the type system
       _ -> Error(InvalidSubmatches)
     }
   })

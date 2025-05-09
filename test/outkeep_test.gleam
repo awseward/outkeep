@@ -7,7 +7,7 @@ import gleeunit
 import gleeunit/should
 import outkeep
 import outkeep/checklist_item.{type ChecklistItem, ChecklistItem}
-import outkeep/export
+import outkeep/export.{NoRegexMatch}
 import outkeep/note
 import simplifile
 
@@ -21,6 +21,12 @@ pub fn export_parse_happy_path_test() {
 
   export_part.timestamp |> should_.equal_iso8601("2025-05-08T02:39:08.000Z")
   export_part.number |> should.equal(1)
+}
+
+pub fn export_parse_no_regex_match_test() {
+  export.parse("some_junk.zip")
+  |> should.be_error
+  |> should.equal(NoRegexMatch)
 }
 
 pub fn checklist_from_json_on_checklist_test() {
