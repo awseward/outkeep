@@ -10,56 +10,64 @@ import outkeep/unknown_note.{type UnknownNote}
 // so things don't get too confusing, but I don't love that…
 
 pub type Note {
-  C(checklist: Checklist)
-  TN(text_note: TextNote)
-  UN(unknown_note: UnknownNote)
+  Checklist(checklist: Checklist)
+  TextNote(text_note: TextNote)
+  UnknownNote(unknown_note: UnknownNote)
 }
 
 pub fn decode(dyn: Dynamic) -> Result(Note, List(DecodeError)) {
   dyn
   |> dynamic.any([
-    fn(d) { d |> checklist.decode |> result.map(with: C) },
-    fn(d) { d |> text_note.decode |> result.map(with: TN) },
-    fn(d) { d |> unknown_note.decode |> result.map(with: UN) },
+    fn(d) { d |> checklist.decode |> result.map(with: Checklist) },
+    fn(d) { d |> text_note.decode |> result.map(with: TextNote) },
+    fn(d) { d |> unknown_note.decode |> result.map(with: UnknownNote) },
   ])
 }
 
 pub fn title(n: Note) -> String {
   case n {
-    C(checklist:) -> checklist.title
-    TN(text_note:) -> text_note.title
-    UN(unknown_note:) -> unknown_note.title
+    Checklist(checklist:) -> checklist.title
+    TextNote(text_note:) -> text_note.title
+    UnknownNote(unknown_note:) -> unknown_note.title
   }
 }
 
 pub fn is_archived(n: Note) -> Bool {
   case n {
-    C(checklist:) -> checklist.is_archived
-    TN(text_note:) -> text_note.is_archived
-    UN(unknown_note:) -> unknown_note.is_archived
+    Checklist(checklist:) -> checklist.is_archived
+    TextNote(text_note:) -> text_note.is_archived
+    UnknownNote(unknown_note:) -> unknown_note.is_archived
   }
 }
 
 pub fn is_trashed(n: Note) -> Bool {
   case n {
-    C(checklist:) -> checklist.is_trashed
-    TN(text_note:) -> text_note.is_trashed
-    UN(unknown_note:) -> unknown_note.is_trashed
+    Checklist(checklist:) -> checklist.is_trashed
+    TextNote(text_note:) -> text_note.is_trashed
+    UnknownNote(unknown_note:) -> unknown_note.is_trashed
   }
 }
 
 pub fn created_at(n: Note) -> Time {
   case n {
-    C(checklist:) -> checklist.created_at
-    TN(text_note:) -> text_note.created_at
-    UN(unknown_note:) -> unknown_note.created_at
+    Checklist(checklist:) -> checklist.created_at
+    TextNote(text_note:) -> text_note.created_at
+    UnknownNote(unknown_note:) -> unknown_note.created_at
   }
 }
 
 pub fn edited_at(n: Note) -> Time {
   case n {
-    C(checklist:) -> checklist.edited_at
-    TN(text_note:) -> text_note.edited_at
-    UN(unknown_note:) -> unknown_note.edited_at
+    Checklist(checklist:) -> checklist.edited_at
+    TextNote(text_note:) -> text_note.edited_at
+    UnknownNote(unknown_note:) -> unknown_note.edited_at
+  }
+}
+
+pub fn color(n: Note) -> String {
+  case n {
+    Checklist(checklist:) -> checklist.color
+    TextNote(text_note:) -> text_note.color
+    UnknownNote(unknown_note:) -> unknown_note.color
   }
 }
