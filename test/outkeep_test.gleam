@@ -15,7 +15,7 @@ pub fn main() {
   gleeunit.main()
 }
 
-pub fn export_parse_test() {
+pub fn export_parse_happy_path_test() {
   let export_part =
     export.parse("takeout-20250508T023908Z-001.zip") |> should.be_ok
 

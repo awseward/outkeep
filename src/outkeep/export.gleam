@@ -1,37 +1,43 @@
 import birl
 import gleam/int
 import gleam/option.{Some}
-import gleam/regex.{type Match}
+import gleam/regex
 import gleam/result
 
 pub type ExportPart {
   ExportPart(timestamp: birl.Time, number: Int)
 }
 
-pub fn parse(filename: String) -> Result(ExportPart, Nil) {
-  use match <- result.try(scan(filename))
-  use #(raw_timestamp, raw_number) <- result.try(unpack_submatches(match))
-  use timestamp <- result.try(birl.parse(raw_timestamp))
-  use number <- result.try(int.parse(raw_number))
-
-  Ok(ExportPart(timestamp:, number:))
+pub type ExportParseError {
+  NoRegexMatch
+  TooManyRegexMatches
+  InvalidSubmatches
+  CouldNotParseTimestamp
+  CouldNotParseNumber
 }
 
-fn scan(filename: String) {
-  let assert Ok(re) = regex.from_string("takeout-(\\d{8}T\\d{6}Z)-(\\d+).zip")
+pub fn parse(filename: String) -> Result(ExportPart, ExportParseError) {
+  let assert Ok(re) = regex.from_string("^takeout-(\\d{8}T\\d{6}Z)-(\\d+).zip$")
 
-  case regex.scan(re, filename) {
-    [match] -> Ok(match)
-    // No match — FIXME: Add a specific error
-    [] -> Error(Nil)
-    // Multiple matches — FIXME: Add a specific error
-    [_, ..] -> Error(Nil)
-  }
-}
+  use match <- result.try({
+    case regex.scan(re, filename) {
+      [match] -> Ok(match)
+      [] -> Error(NoRegexMatch)
+      [_, ..] -> Error(TooManyRegexMatches)
+    }
+  })
+  use #(raw_timestamp, raw_number) <- result.try({
+    case match.submatches {
+      [Some(ts), Some(num)] -> Ok(#(ts, num))
+      _ -> Error(InvalidSubmatches)
+    }
+  })
+  use timestamp <- result.try(
+    raw_timestamp |> birl.parse |> result.replace_error(CouldNotParseTimestamp),
+  )
+  use number <- result.try(
+    raw_number |> int.parse |> result.replace_error(CouldNotParseNumber),
+  )
 
-fn unpack_submatches(match: Match) {
-  case match.submatches {
-    [Some(raw_timestamp), Some(raw_number)] -> Ok(#(raw_timestamp, raw_number))
-    _ -> Error(Nil)
-  }
+  ExportPart(timestamp:, number:) |> Ok
 }
