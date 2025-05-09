@@ -5,10 +5,6 @@ import outkeep/checklist.{type Checklist}
 import outkeep/text_note.{type TextNote}
 import outkeep/unknown_note.{type UnknownNote}
 
-// Not sure if this is actually worth having just yet… Naming the constructors
-// is pretty unpleasant, so making it opaque for now and just appending a `_`
-// so things don't get too confusing, but I don't love that…
-
 pub type Note {
   Checklist(checklist: Checklist)
   TextNote(text_note: TextNote)
