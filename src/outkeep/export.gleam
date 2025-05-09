@@ -8,7 +8,7 @@ pub type ExportPart {
   ExportPart(timestamp: birl.Time, number: Int)
 }
 
-pub type ExportParseError {
+pub type ParseError {
   NoRegexMatch
   TooManyRegexMatches
   InvalidSubmatches
@@ -16,9 +16,10 @@ pub type ExportParseError {
   CouldNotParseNumber
 }
 
-pub fn parse(filename: String) -> Result(ExportPart, ExportParseError) {
-  let assert Ok(re) = regex.from_string("^takeout-(\\d{8}T\\d{6}Z)-(\\d+).zip$")
+const archive_file_pattern = "^takeout-(\\d{8}T\\d{6}Z)-(\\d+).(?:zip|tar.gz)$"
 
+pub fn parse(filename: String) -> Result(ExportPart, ParseError) {
+  let assert Ok(re) = regex.from_string(archive_file_pattern)
   use match <- result.try({
     case regex.scan(re, filename) {
       [match] -> Ok(match)
