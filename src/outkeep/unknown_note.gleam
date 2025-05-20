@@ -1,27 +1,46 @@
 import birl.{type Time}
-import gleam/dynamic.{type DecodeError, type Dynamic}
-import outkeep/time.{time_from_usec}
+import gleam/dynamic/decode.{type Decoder}
+import gleam/option.{type Option}
+import gleam/string
+import outkeep/annotation.{type Annotation}
+import outkeep/color.{type Color}
+import outkeep/time
 
 pub type UnknownNote {
   UnknownNote(
-    title: String,
+    title: Option(String),
     is_archived: Bool,
+    is_pinned: Bool,
     is_trashed: Bool,
     created_at: Time,
     edited_at: Time,
-    color: String,
+    color: Color,
+    annotations: List(Annotation),
   )
 }
 
-pub fn decode(dyn: Dynamic) -> Result(UnknownNote, List(DecodeError)) {
-  dyn
-  |> dynamic.decode6(
-    UnknownNote,
-    dynamic.field("title", of: dynamic.string),
-    dynamic.field("isArchived", of: dynamic.bool),
-    dynamic.field("isTrashed", of: dynamic.bool),
-    dynamic.field("createdTimestampUsec", of: time_from_usec),
-    dynamic.field("userEditedTimestampUsec", of: time_from_usec),
-    dynamic.field("color", of: dynamic.string),
+pub fn decoder() -> Decoder(UnknownNote) {
+  use title <- decode.field("title", decode.optional(decode.string))
+  use is_archived <- decode.field("isArchived", decode.bool)
+  use is_pinned <- decode.field("isPinned", decode.bool)
+  use is_trashed <- decode.field("isTrashed", decode.bool)
+  use created_at <- decode.field("createdTimestampUsec", time.decoder())
+  use edited_at <- decode.field("userEditedTimestampUsec", time.decoder())
+  use color <- decode.field("color", color.decoder())
+  use annotations <- decode.optional_field(
+    "annotations",
+    [],
+    decode.list(annotation.decoder()),
   )
+
+  decode.success(UnknownNote(
+    title: title |> option.map(string.trim),
+    is_archived:,
+    is_pinned:,
+    is_trashed:,
+    created_at:,
+    edited_at:,
+    color:,
+    annotations:,
+  ))
 }

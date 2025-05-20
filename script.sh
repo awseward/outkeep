@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+_usage() { >&2 echo 'TODO: Document usage' && return 1; }
+
 watch_test() {
   (
     # This error behavior in a subshell is needed for entr to be able to start
@@ -16,4 +18,22 @@ watch_test() {
   )
 }
 
-"$@"
+pack_file() {
+  local -r filename="$1"
+  local -r file_basename="$(basename "$filename")"
+
+  jq --compact-output --arg filename "$file_basename" -- '{
+    $filename,
+    content: .
+  }' < "$filename"
+}
+
+pack_files() {
+  local -r dir_path="$1"
+
+  find "$dir_path" -type f -name '*.json' -print0 | xargs -0 -n1 -t "$0" pack_file
+}
+
+# ---
+
+"${@:-_usage}"

@@ -1,7 +1,6 @@
-import birl
-import gleam/dynamic.{type Dynamic}
-import gleam/result
+import birl.{type Time}
+import gleam/dynamic/decode.{type Decoder}
 
-pub fn time_from_usec(dyn: Dynamic) {
-  dyn |> dynamic.int |> result.map(birl.from_unix_micro)
+pub fn decoder() -> Decoder(Time) {
+  decode.int |> decode.map(birl.from_unix_micro)
 }

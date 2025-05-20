@@ -1,5 +1,5 @@
 import birl.{type Time}
-import gleam/regex
+import gleam/regexp
 import gleam/string
 import gleeunit/should
 
@@ -8,9 +8,8 @@ pub fn contain(haystack: String, needle: String) -> Nil {
     True -> Nil
     False ->
       panic as string.concat([
-        "\n\t",
         string.inspect(haystack),
-        "\n\tshould contain \n\t",
+        " should contain ",
         string.inspect(needle),
       ])
   }
@@ -22,18 +21,26 @@ pub fn equal_iso8601(t t: Time, expected expected: String) -> Nil {
   |> should.equal(expected)
 }
 
-pub fn match_iso8601(t t: Time, pattern pattern: String) -> Nil {
-  let assert Ok(re) = regex.from_string(pattern)
-  let t_iso8601 = birl.to_iso8601(t)
-
-  case regex.check(with: re, content: t_iso8601) {
+pub fn match_pattern(content: String, pattern pattern: String) -> Nil {
+  let assert Ok(re) = regexp.from_string(pattern)
+  case regexp.check(with: re, content:) {
     True -> Nil
     False ->
       panic as string.concat([
-        "\n\t",
-        string.inspect(t_iso8601),
-        "\n\tshould match regex pattern \n\t",
+        string.inspect(content),
+        " should match regexp pattern ",
         string.inspect(pattern),
       ])
   }
+}
+
+type ToString(a) =
+  fn(a) -> String
+
+pub fn match_pattern_map(a: a, f: ToString(a), pattern pattern: String) -> Nil {
+  a |> f |> match_pattern(pattern:)
+}
+
+pub fn match_iso8601(t: Time, pattern pattern: String) -> Nil {
+  t |> match_pattern_map(birl.to_iso8601, pattern:)
 }

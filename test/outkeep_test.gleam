@@ -1,132 +1,159 @@
 import extensions/should_
-import gleam/dynamic.{DecodeError}
-import gleam/json.{UnexpectedFormat}
-import gleam/list
-import gleam/result
+import gleam/json
+import gleam/option.{None, Some}
+import gleam/string
+import gleam/uri.{Uri}
 import gleeunit
 import gleeunit/should
 import outkeep
-import outkeep/checklist_item.{type ChecklistItem, ChecklistItem}
-import outkeep/note
+import outkeep/annotation.{type Annotation, Annotation, Weblink}
+import outkeep/checklist_item.{ChecklistItem}
+import outkeep/color.{type Color}
+import outkeep/note.{type Note}
 import simplifile
 
 pub fn main() {
   gleeunit.main()
 }
 
-pub fn checklist_from_json_on_checklist_test() {
-  let checklist =
+pub fn note_from_json_with_checklist_test() {
+  let note =
     "./test/example_keep_checklist.json"
-    |> read_file
-    |> outkeep.checklist_from_json
-    |> should.be_ok
+    |> expect_note_from_file
+    |> should_match_note(
+      title: "An example Keep checklist",
+      is_archived: False,
+      is_trashed: False,
+      created_at: "2024-08-12T03:32:12.334Z",
+      edited_at: "2024-08-12T04:48:16.020Z",
+      color: color.Default,
+      annotations: [],
+    )
 
-  checklist.title |> should.equal("An example Keep checklist")
-
-  checklist.is_archived |> should.be_false
-  checklist.is_trashed |> should.be_false
-
-  let assert [i1, i2, i3, i4] = checklist.items
-  i1 |> item_should_have(is_checked: False, text: "I'm not checked")
-  i1 |> item_should_have(is_checked: False, text: "I'm not checked")
-  i2 |> item_should_have(is_checked: False, text: "I'm also not checked")
-  i3 |> item_should_have(is_checked: True, text: "I'm checked")
-  i4 |> item_should_have(is_checked: True, text: "I'm also checked")
-
-  checklist.created_at |> should_.equal_iso8601("2024-08-12T03:32:12.334Z")
-  checklist.edited_at |> should_.equal_iso8601("2024-08-12T04:48:16.020Z")
+  note
+  |> note.items
+  |> should.be_ok
+  |> should.equal([
+    ChecklistItem(
+      is_checked: False,
+      text: "I'm not checked",
+      text_html: "<!-- … snipped for brevity … -->",
+    ),
+    ChecklistItem(
+      is_checked: False,
+      text: "I'm also not checked",
+      text_html: "<!-- … snipped for brevity … -->",
+    ),
+    ChecklistItem(
+      is_checked: True,
+      text: "I'm checked",
+      text_html: "<!-- … snipped for brevity … -->",
+    ),
+    ChecklistItem(
+      is_checked: True,
+      text: "I'm also checked",
+      text_html: "<!-- … snipped for brevity … -->",
+    ),
+  ])
 }
 
-pub fn checklist_from_json_on_text_note_test() {
-  "./test/example_keep_text_note.json"
-  |> read_file
-  |> outkeep.checklist_from_json
-  |> should.be_error
-  |> should.equal(
-    UnexpectedFormat([
-      DecodeError(expected: "field", found: "nothing", path: ["listContent"]),
-    ]),
-  )
-}
-
-pub fn text_note_from_json_on_text_note_test() {
-  let text_note =
+pub fn note_from_json_with_text_note_test() {
+  let note =
     "./test/example_keep_text_note.json"
-    |> read_file
-    |> outkeep.text_note_from_json
-    |> should.be_ok
+    |> expect_note_from_file
+    |> should_match_note(
+      title: "An example Keep text note",
+      is_archived: True,
+      is_trashed: False,
+      created_at: "2024-01-09T18:51:17.418Z",
+      edited_at: "2024-01-09T19:53:46.609Z",
+      color: color.Default,
+      annotations: [],
+    )
 
-  text_note.title |> should.equal("An example Keep text note")
-  text_note.is_archived |> should.be_true
-  text_note.is_trashed |> should.be_false
-
-  text_note.text
+  note
+  |> note.text
+  |> should.be_ok
   |> should.equal("Here is some text" <> "\n" <> "that is on multiple lines")
 
-  text_note.created_at |> should_.equal_iso8601("2024-01-09T18:51:17.418Z")
-  text_note.edited_at |> should_.equal_iso8601("2024-01-09T19:53:46.609Z")
+  note
+  |> note.text_content_html
+  |> should.be_ok
+  |> should.equal("<!-- … snipped for brevity … -->")
 }
 
-pub fn text_note_from_json_on_checklist_test() {
-  "./test/example_keep_checklist.json"
-  |> read_file
-  |> outkeep.text_note_from_json
-  |> should.be_error
-  |> should.equal(
-    UnexpectedFormat([
-      DecodeError(expected: "field", found: "nothing", path: ["textContent"]),
-    ]),
+pub fn note_from_json_with_unknown_note_test() {
+  "./test/example_keep_unknown.json"
+  |> expect_note_from_file
+  |> should_match_note(
+    title: "My shopping list",
+    is_archived: False,
+    is_trashed: False,
+    created_at: "2017-07-12T18:55:47.649Z",
+    edited_at: "2017-07-12T18:55:47.649Z",
+    color: color.Default,
+    annotations: [
+      Annotation(
+        description: "",
+        source: Weblink,
+        title: "",
+        url: Uri(
+          Some("https"),
+          None,
+          Some("support.google.com"),
+          None,
+          "/keep/",
+          Some("p=migrated_from_assistant"),
+          None,
+        ),
+      ),
+    ],
   )
 }
 
-pub fn note_from_json_test() {
-  let assert [n_checklist, n_text, n_unknown] =
-    [
-      "./test/example_keep_checklist.json", "./test/example_keep_text_note.json",
-      "./test/example_keep_unknown.json",
-    ]
-    |> list.map(fn(fpath) { fpath |> read_file |> outkeep.note_from_json })
-    |> result.all
-    |> should.be_ok
-
-  n_checklist |> note.title |> should.equal("An example Keep checklist")
-  n_checklist |> note.is_archived |> should.be_false
-  n_checklist |> note.is_trashed |> should.be_false
-  n_checklist
-  |> note.created_at
-  |> should_.equal_iso8601("2024-08-12T03:32:12.334Z")
-  n_checklist
-  |> note.edited_at
-  |> should_.equal_iso8601("2024-08-12T04:48:16.020Z")
-
-  n_text |> note.title |> should.equal("An example Keep text note")
-  n_text |> note.is_archived |> should.be_true
-  n_text |> note.is_trashed |> should.be_false
-  n_text |> note.created_at |> should_.equal_iso8601("2024-01-09T18:51:17.418Z")
-  n_text |> note.edited_at |> should_.equal_iso8601("2024-01-09T19:53:46.609Z")
-
-  n_unknown |> note.title |> should.equal("My shopping list")
-  n_unknown |> note.is_archived |> should.be_false
-  n_unknown |> note.is_trashed |> should.be_false
-  n_unknown
-  |> note.created_at
-  |> should_.equal_iso8601("2017-07-12T18:55:47.649Z")
-  n_unknown
-  |> note.edited_at
-  |> should_.equal_iso8601("2017-07-12T18:55:47.649Z")
+pub fn note_from_json_with_bad_json_test() {
+  "./test/example_keep_invalid.json"
+  |> read_note
+  |> should.be_error
 }
 
 // --- Helpers and such
 
-fn read_file(filepath: String) -> String {
-  let assert Ok(content) = simplifile.read(from: filepath)
-  content
+fn expect_note_from_file(filepath: String) -> Note {
+  filepath |> read_note |> should.be_ok
 }
 
-fn item_should_have(
-  item item: ChecklistItem,
-  is_checked is_checked: Bool,
-  text text: String,
+fn read_file(filepath: String) -> String {
+  case simplifile.read(filepath) {
+    Ok(str) -> str
+    Error(error) -> {
+      panic as string.concat([string.inspect(error), " filepath=", filepath])
+    }
+  }
+}
+
+fn read_note(filepath: String) -> Result(Note, json.DecodeError) {
+  filepath
+  |> read_file
+  |> outkeep.note_from_json
+}
+
+fn should_match_note(
+  note: Note,
+  title title: String,
+  is_archived is_archived: Bool,
+  is_trashed is_trashed: Bool,
+  created_at created_at: String,
+  edited_at edited_at: String,
+  color color: Color,
+  annotations annotations: List(Annotation),
 ) {
-  item |> should.equal(ChecklistItem(is_checked:, text:))
+  note |> note.title |> should.be_some |> should.equal(title)
+  note |> note.is_archived |> should.equal(is_archived)
+  note |> note.is_trashed |> should.equal(is_trashed)
+  note |> note.created_at |> should_.equal_iso8601(created_at)
+  note |> note.edited_at |> should_.equal_iso8601(edited_at)
+  note |> note.color |> should.equal(color)
+  note |> note.annotations |> should.equal(annotations)
+  note
 }

@@ -1,48 +1,8 @@
-import birl
-import gleam/int
-import gleam/option.{Some}
-import gleam/regex
-import gleam/result
+//// This package is for handling exports, not creating them
 
-pub type ExportPart {
-  ExportPart(timestamp: birl.Time, number: Int)
-}
+import gleam/dict.{type Dict}
+import outkeep/export/export_part.{type ExportPart}
+import outkeep/export/note_file.{type NoteFileDict}
 
-pub type ParseError {
-  NoRegexMatch
-  TooManyRegexMatches
-  InvalidSubmatches
-  CouldNotParseTimestamp
-  CouldNotParseNumber
-}
-
-const archive_file_pattern = "^takeout-(\\d{8}T\\d{6}Z)-(\\d+).(?:zip|tar.gz)$"
-
-pub fn parse(filename: String) -> Result(ExportPart, ParseError) {
-  let assert Ok(re) = regex.from_string(archive_file_pattern)
-  use match <- result.try({
-    case regex.scan(re, filename) {
-      [match] -> Ok(match)
-      [] -> Error(NoRegexMatch)
-      // NOTE: The way the regex is written, I don't even think this is
-      // possible, but I am not sure of how to prove that to the type system
-      [_, ..] -> Error(TooManyRegexMatches)
-    }
-  })
-  use #(raw_timestamp, raw_number) <- result.try({
-    case match.submatches {
-      [Some(ts), Some(num)] -> Ok(#(ts, num))
-      // NOTE: The way the regex is written, I don't even think this is
-      // possible, but I am not sure of how to prove that to the type system
-      _ -> Error(InvalidSubmatches)
-    }
-  })
-  use timestamp <- result.try(
-    raw_timestamp |> birl.parse |> result.replace_error(CouldNotParseTimestamp),
-  )
-  use number <- result.try(
-    raw_number |> int.parse |> result.replace_error(CouldNotParseNumber),
-  )
-
-  ExportPart(timestamp:, number:) |> Ok
-}
+pub type Export =
+  Dict(ExportPart, NoteFileDict)
