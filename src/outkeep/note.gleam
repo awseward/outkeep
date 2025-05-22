@@ -1,6 +1,8 @@
 import birl.{type Time}
 import gleam/dynamic/decode.{type Decoder}
-import gleam/option.{type Option, None, Some}
+import gleam/list
+import gleam/option.{type Option}
+import gleam/result
 import outkeep/annotation
 import outkeep/checklist.{type Checklist}
 import outkeep/checklist_item.{type ChecklistItem}
@@ -33,25 +35,37 @@ pub fn is_unknown_note(n: Note) -> Bool {
   n |> is(unknown_note)
 }
 
-pub fn checklist(n: Note) -> Option(Checklist) {
+pub fn checklist(n: Note) -> Result(Checklist, Nil) {
   case n {
-    Checklist(checklist:) -> Some(checklist)
-    _ -> None
+    Checklist(checklist:) -> Ok(checklist)
+    _ -> Error(Nil)
   }
 }
 
-pub fn text_note(n: Note) -> Option(TextNote) {
+pub fn checklists(ns: List(Note)) -> List(Checklist) {
+  ns |> list.filter_map(checklist)
+}
+
+pub fn text_note(n: Note) -> Result(TextNote, Nil) {
   case n {
-    TextNote(text_note:) -> Some(text_note)
-    _ -> None
+    TextNote(text_note:) -> Ok(text_note)
+    _ -> Error(Nil)
   }
 }
 
-pub fn unknown_note(n: Note) -> Option(UnknownNote) {
+pub fn text_notes(ns: List(Note)) -> List(TextNote) {
+  ns |> list.filter_map(text_note)
+}
+
+pub fn unknown_note(n: Note) -> Result(UnknownNote, Nil) {
   case n {
-    UnknownNote(unknown_note:) -> Some(unknown_note)
-    _ -> None
+    UnknownNote(unknown_note:) -> Ok(unknown_note)
+    _ -> Error(Nil)
   }
+}
+
+pub fn unknown_notes(ns: List(Note)) -> List(UnknownNote) {
+  ns |> list.filter_map(unknown_note)
 }
 
 pub fn title(n: Note) -> Option(String) {
@@ -142,6 +156,6 @@ fn unknown_note_decoder() -> Decoder(Note) {
   unknown_note.decoder() |> decode.map(UnknownNote)
 }
 
-fn is(n: Note, by fun: fn(Note) -> Option(a)) {
-  n |> fun |> option.is_some
+fn is(n: Note, by f: fn(Note) -> Result(a, e)) -> Bool {
+  n |> f |> result.is_ok
 }
