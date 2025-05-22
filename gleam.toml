@@ -16,7 +16,7 @@ repository = { type = "github", user = "awseward", repo = "outkeep" }
 gleam_stdlib = ">= 0.34.0 and < 2.0.0"
 birl = ">= 1.7.1 and < 2.0.0"
 gleam_json = ">= 2.3.0 and < 4.0.0"
-stdin = { git = "https://github.com/awseward/gleam_stdin", ref = "upgrade-stdlib" }
+stdin = { git = "https://github.com/awseward/gleam_stdin", ref = "f5878254418f2d2c0e46f01647cf48d3bf7c4fc5" }
 gleam_yielder = ">= 1.1.0 and < 2.0.0"
 gleam_regexp = ">= 1.1.1 and < 2.0.0"
 sqlight = ">= 1.0.1 and < 2.0.0"
