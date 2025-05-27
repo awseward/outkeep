@@ -14,7 +14,7 @@ packages = [
   { name = "ranger", version = "1.4.0", build_tools = ["gleam"], requirements = ["gleam_stdlib", "gleam_yielder"], otp_app = "ranger", source = "hex", outer_checksum = "C8988E8F8CDBD3E7F4D8F2E663EF76490390899C2B2885A6432E942495B3E854" },
   { name = "simplifile", version = "2.2.1", build_tools = ["gleam"], requirements = ["filepath", "gleam_stdlib"], otp_app = "simplifile", source = "hex", outer_checksum = "C88E0EE2D509F6D86EB55161D631657675AA7684DAB83822F7E59EB93D9A60E3" },
   { name = "sqlight", version = "1.0.1", build_tools = ["gleam"], requirements = ["esqlite", "gleam_stdlib"], otp_app = "sqlight", source = "hex", outer_checksum = "5435662352757841F9395C933404A223F39F73C73C4EC5E4418A7CB8AE85CDE6" },
-  { name = "stdin", version = "2.0.2", build_tools = ["gleam"], requirements = ["gleam_stdlib", "gleam_yielder"], source = "git", repo = "https://github.com/awseward/gleam_stdin", commit = "f5878254418f2d2c0e46f01647cf48d3bf7c4fc5" },
+  { name = "stdin", version = "2.0.2", build_tools = ["gleam"], requirements = ["gleam_stdlib", "gleam_yielder"], otp_app = "stdin", source = "hex", outer_checksum = "437084939CE094E06D32D07EB19B74473D08895AB817C03550CEDFDBF0DFDC19" },
 ]
 
 [requirements]
@@ -27,4 +27,4 @@ gleam_yielder = { version = ">= 1.1.0 and < 2.0.0" }
 gleeunit = { version = ">= 1.0.0 and < 2.0.0" }
 simplifile = { version = ">= 2.1.0 and < 3.0.0" }
 sqlight = { version = ">= 1.0.1 and < 2.0.0" }
-stdin = { git = "https://github.com/awseward/gleam_stdin", ref = "f5878254418f2d2c0e46f01647cf48d3bf7c4fc5" }
+stdin = { version = "~> 2.0" }

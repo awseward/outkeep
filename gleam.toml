@@ -20,7 +20,7 @@ gleam_regexp = ">= 1.1.1 and < 2.0.0"
 gleam_stdlib = "~> 0.58"
 gleam_yielder = ">= 1.1.0 and < 2.0.0"
 sqlight = ">= 1.0.1 and < 2.0.0"
-stdin = { git = "https://github.com/awseward/gleam_stdin", ref = "f5878254418f2d2c0e46f01647cf48d3bf7c4fc5" }
+stdin = "~> 2.0"
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
